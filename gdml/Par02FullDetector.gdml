@@ -255,7 +255,7 @@
       </physvol>
       <physvol name="ECalEndCap_20x7ff5f9e7be10">
         <volumeref ref="ECalEndCap_20x7ff5f9e7bd10"/>
-        <rotation name="ECalEndCap_20x7ff5f9e7be10_rot" unit="deg" x="0" y="0" z="65.8741388002726"/>
+        <position name="ECalEndCap_20x7ff5f9e7be10_pos" unit="mm" x="0" y="0" z="-8500"/>
       </physvol>
       <physvol name="ECalForward_10x7ff5f9e7c260">
         <volumeref ref="ECalForward_10x7ff5f9e7c130"/>

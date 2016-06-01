@@ -30,9 +30,9 @@
 			document.body.appendChild(stats.domElement);
 
 			var camera = new THREE.PerspectiveCamera(75, w/h, 0.1, 1000);
-			camera.position.x = 1.0;
-			camera.position.y = 1.0;
-			camera.position.z = 1.0;
+			camera.position.x = 3.0;
+			camera.position.y = 3.0;
+			camera.position.z = 3.0;
 
 			var renderer = new THREE.WebGLRenderer({antialias:true});
 			renderer.setSize(w, h);
@@ -51,12 +51,12 @@
       directionalLight.position.set(0, 0.5, 1);
       scene.add(directionalLight);
 
-			var axes = new THREE.AxisHelper(0.5);
+			var axes = new THREE.AxisHelper(0.6);
 			scene.add(axes);
 
 			var gdmlLoader = new THREE.GDMLLoader();
 			gdmlLoader.load('./gdml/Par02FullDetector.gdml', function(objects){
-				console.log(objects);
+				scene.add(objects);
 			});
 
 			var render = function () {

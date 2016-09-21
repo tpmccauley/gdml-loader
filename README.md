@@ -2,5 +2,8 @@
 GDML loader for three.js
 <thomas.mccauley@cern.ch>
 
+GDML:
+http://gdml.web.cern.ch/GDML/
+
 Test:
-http://cmsdoc.cern.ch/~mccauley/gdml-loader/
+https://tpmccauley.github.io/gdml-loader/

@@ -13,6 +13,7 @@
   constructor: THREE.GDMLLoader,
 
   group: new THREE.Group(),
+  defines: {},
   geometries: {},
   refs: {},
   meshes: [],
@@ -32,6 +33,7 @@
   parse: function ( text ) {
     GDML = new DOMParser().parseFromString( text, 'text/xml' );
 
+    this.parseDefines();
     this.parseSolids();
     this.parseVolumes();
     this.parsePhysVols();
@@ -39,10 +41,70 @@
     return this.group;
   },
 
+  parseDefines: function() {
+
+    var elements = GDML.querySelectorAll('define');
+    var defs = elements[0].childNodes;
+    var name = '';
+    var value;
+
+    for ( var i = 0; i < defs.length; i++ ) {
+
+      var nodeName = defs[i].nodeName;
+      var def = defs[i];
+
+      if ( nodeName === 'constant' ) {
+        name = def.getAttribute('name');
+        value = def.getAttribute('value');
+
+        console.log('constant', name, value);
+      }
+
+      if ( nodeName === 'position' ) {
+        name = def.getAttribute('name');
+
+        var x = def.getAttribute('x');
+
+        if ( ! x ) {
+          x = 0.0;
+        }
+
+        var y = def.getAttribute('y');
+
+        if ( ! y ) {
+          y = 0.0;
+        }
+
+        var z = def.getAttribute('z');
+
+        if ( ! z ) {
+          z = 0.0;
+        }
+
+        var position = new THREE.Vector3(x/1e4, y/1e4, z/1e4);
+        console.log('position', name, position);
+      }
+
+      if ( nodeName === 'rotation' ) {
+        name = def.getAttribute('name');
+      }
+
+      if ( nodeName === 'quantity' ) {
+        name = def.getAttribute('name');
+      }
+
+      if ( nodeName === 'expression' ) {
+        name = def.getAttribute('name');
+      }
+    }
+  },
+
+
   parseSolids: function() {
 
     var elements = GDML.querySelectorAll('solids');
     var solids = elements[0].childNodes;
+    var name = '';
 
     for ( var i = 0; i < solids.length; i++ ) {
 
@@ -56,6 +118,8 @@
         var y = solid.getAttribute('y') / 1e4;
         var z = solid.getAttribute('z') / 1e4;
 
+        var geometry = new THREE.BoxGeometry(x,y,z);
+        this.geometries[name] = geometry;
       }
 
       if ( type === 'tube' ) {
@@ -88,8 +152,20 @@
         var geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
         geometry.center();
         this.geometries[name] = geometry;
-
       }
+
+      if ( type === ' polycone' ) {
+        //console.log('polycone');
+      }
+
+      if ( type === 'polyhedra' ) {
+        //console.log('polyhedra');
+      }
+
+      if ( type === 'trd' ) {
+        //console.log('trd');
+      }
+
     }
   },
 
@@ -165,7 +241,7 @@
       mesh.position.set(position.x, position.y, position.z);
       mesh.rotation.set(rotation.x, rotation.y, rotation.z);
 
-      console.log(name, position);
+      //console.log(name, position);
 
       this.group.add(mesh);
 

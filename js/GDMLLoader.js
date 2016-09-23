@@ -194,10 +194,57 @@
 
       }
 
+      if ( type === 'sphere' ) {
+
+        name = solid.getAttribute('name');
+        var rmax = solid.getAttribute('rmax');
+
+        var startphi = solid.getAttribute('startphi');
+        var deltaphi = solid.getAttribute('deltaphi');
+
+        var starttheta = solid.getAttribute('starttheta');
+        var deltatheta = solid.getAttribute('deltatheta');
+
+        var aunit = solid.getAttribute('aunit');
+
+        if ( ! startphi ) {
+          startphi = 0.0;
+        }
+
+        if ( ! starttheta ) {
+          starttheta = 0.0;
+        }
+
+        if ( aunit === 'deg' ) {
+
+          startphi *= Math.PI/180.0;
+          deltaphi *= Math.PI/180.0;
+
+          starttheta *= Math.PI/180.0;
+          deltatheta *= Math.PI/180.0;
+
+        }
+
+        // radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength
+        var sphere = new THREE.SphereGeometry(rmax, 32, 32, startphi, deltaphi, starttheta, deltatheta);
+
+        this.geometries[name] = sphere;
+
+      }
+
+      if ( type === 'orb' ) {
+
+        name = solid.getAttribute('name');
+        var r = solid.getAttribute('r');
+
+        var sphere = new THREE.SphereGeometry(r, 32, 32, 0.0, 2*Math.PI, 0.0, Math.PI);
+        this.geometries[name] = sphere;
+
+      }
+
+
       if ( type === ' polycone' ) {
-
         //console.log('polycone');
-
       }
 
       if ( type === 'polyhedra' ) {

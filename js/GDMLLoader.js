@@ -54,13 +54,14 @@
       var def = defs[i];
 
       if ( nodeName === 'constant' ) {
+
         name = def.getAttribute('name');
         value = def.getAttribute('value');
 
-        console.log('constant', name, value);
       }
 
       if ( nodeName === 'position' ) {
+
         name = def.getAttribute('name');
 
         var x = def.getAttribute('x');
@@ -81,20 +82,37 @@
           z = 0.0;
         }
 
-        var position = new THREE.Vector3(x/1e4, y/1e4, z/1e4);
-        console.log('position', name, position);
+        var position = new THREE.Vector3(x, y, z);
+        this.defines[name] = position;
+
       }
 
       if ( nodeName === 'rotation' ) {
+
+        // Note: need to handle constants
+        // before this can be implemented
+
         name = def.getAttribute('name');
+
+        var x = def.getAttribute('x');
+        var y = def.getAttribute('y');
+        var z = def.getAttribute('z');
+
       }
 
       if ( nodeName === 'quantity' ) {
+
+        // Note: need to handle units
+
         name = def.getAttribute('name');
+        var type = def.getAttribute('type');
+
       }
 
       if ( nodeName === 'expression' ) {
+
         name = def.getAttribute('name');
+
       }
     }
   },
@@ -114,16 +132,31 @@
       if ( type === 'box' ) {
 
         name = solid.getAttribute('name');
-        var x = solid.getAttribute('x') / 1e4;
-        var y = solid.getAttribute('y') / 1e4;
-        var z = solid.getAttribute('z') / 1e4;
+
+        var x = solid.getAttribute('x');
+        var y = solid.getAttribute('y');
+        var z = solid.getAttribute('z');
+
+        if ( this.defines[x] ) {
+          x = this.defines[x];
+        }
+
+        if ( this.defines[y] ) {
+          y = this.defines[y];
+        }
+
+        if ( this.defines[z] ) {
+          z = this.defines[z];
+        }
 
         var geometry = new THREE.BoxGeometry(x,y,z);
         this.geometries[name] = geometry;
+
       }
 
       if ( type === 'tube' ) {
 
+        // Note: need to handle units
         var aunit = solid.getAttribute('aunit');
         var lunit = solid.getAttribute('lunit');
 
@@ -131,8 +164,14 @@
         var rmin = solid.getAttribute('rmin') / 1e4;
         var rmax = solid.getAttribute('rmax') / 1e4;
         var z = solid.getAttribute('z') / 1e4;
-        var startphi = solid.getAttribute('startphi') * Math.PI/180.0;
-        var deltaphi = solid.getAttribute('deltaphi') * Math.PI/180.0;
+
+        var startphi = solid.getAttribute('startphi');
+        var deltaphi = solid.getAttribute('deltaphi');
+
+        if ( aunit === 'deg' ) {
+          startphi *= Math.PI/180.0;
+          deltaphi *= Math.PI/180.0;
+        }
 
         var shape = new THREE.Shape();
         // x,y, radius, startAngle, endAngle, clockwise, rotation
@@ -152,10 +191,13 @@
         var geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
         geometry.center();
         this.geometries[name] = geometry;
+
       }
 
       if ( type === ' polycone' ) {
+
         //console.log('polycone');
+
       }
 
       if ( type === 'polyhedra' ) {
@@ -170,6 +212,7 @@
   },
 
   parseVolumes: function() {
+
     var volumes = GDML.querySelectorAll('volume');
 
     for ( var i = 0; i < volumes.length; i++ ) {
@@ -184,6 +227,7 @@
         if ( type === 'solidref' ) {
           var solidref = solidrefs[j].getAttribute('ref');
           this.refs[name] = solidref;
+
         }
       }
     }
@@ -195,6 +239,11 @@
     for ( var i = 0; i < physvols.length; i++ ) {
 
       var name = physvols[i].getAttribute('name');
+
+      if ( ! name ) {
+        name = 'JDoe';
+      }
+
       var children = physvols[i].childNodes;
       var volumeref = '';
 
@@ -212,15 +261,30 @@
 
           var volumeref = children[j].getAttribute('ref');
           geometry = this.geometries[this.refs[volumeref]];
+
+        }
+
+        if ( type === 'positionref' ) {
+
+          var positionref = children[j].getAttribute('ref');
+          position = this.defines[positionref];
+
+        }
+
+        if ( type === 'rotationref' ) {
+
+          var rotationref = children[j].getAttribute('ref');
+
         }
 
         if ( type === 'position' ) {
 
-          var x = children[j].getAttribute('x') / 1e4;
-          var y = children[j].getAttribute('y') / 1e4;
-          var z = children[j].getAttribute('z') / 1e4;
+          var x = children[j].getAttribute('x');
+          var y = children[j].getAttribute('y');
+          var z = children[j].getAttribute('z');
 
-          position.set(x,y,z);
+          // Note: how to handle units?
+          position.set(x / 1e4, y / 1e4, z / 1e4);
         }
 
         if ( type === 'rotation' ) {
@@ -234,17 +298,18 @@
 
       }
 
-      var mesh = new THREE.Mesh(geometry, material);
-      mesh.name = name;
-      mesh.visible = true;
+      if ( geometry ) {
 
-      mesh.position.set(position.x, position.y, position.z);
-      mesh.rotation.set(rotation.x, rotation.y, rotation.z);
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.name = name;
+        mesh.visible = true;
 
-      //console.log(name, position);
+        mesh.position.set(position.x, position.y, position.z);
+        mesh.rotation.set(rotation.x, rotation.y, rotation.z);
 
-      this.group.add(mesh);
+        this.group.add(mesh);
 
+      }
     }
 
   }

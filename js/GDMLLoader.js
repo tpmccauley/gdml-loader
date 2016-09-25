@@ -242,6 +242,64 @@
 
       }
 
+      if ( type === 'cone' ) {
+
+        name = solid.getAttribute('name');
+
+        var rmin1 = solid.getAttribute('rmin1');
+        var rmax1 = solid.getAttribute('rmax1');
+
+        var rmin2 = solid.getAttribute('rmin2');
+        var rmax2 = solid.getAttribute('rmax2');
+
+        var z = solid.getAttribute('z');
+
+        var startphi = solid.getAttribute('startphi');
+        var deltaphi = solid.getAttribute('deltaphi');
+
+        var aunit = solid.getAttribute('aunit');
+
+        if ( aunit === 'deg' ) {
+
+          startphi *= Math.PI/180.0;
+          deltaphi *= Math.PI/180.0;
+
+        }
+
+        // Note: ConeGeometry in THREE assumes inner radii of 0 and rmax1 = 0
+        // radius, height, radialSegments, heightSegments, openEnded, thetaStart, thetaLength
+        //var cone = new THREE.ConeGeometry();
+        //this.geometries[name] = cone;
+
+      }
+
+      if ( type === 'torus' ) {
+
+        name = solid.getAttribute('name');
+
+        var rmin = solid.getAttribute('rmin');
+        var rmax = solid.getAttribute('rmax');
+        var rtor = solid.getAttribute('rtor');
+        var startphi = solid.getAttribute('startphi');
+        var deltaphi = solid.getAttribute('deltaphi');
+
+        var aunit = solid.getAttribute('aunit');
+
+        if ( aunit === 'deg' ) {
+
+          startphi *= Math.PI/180.0;
+          deltaphi *= Math.PI/180.0;
+
+        }
+
+        // Note: There is no inner radius for a THREE.TorusGeometry
+        // and start phi is always 0.0
+        // radius, tube, radialSegments, tubularSegments, arc
+        var torus = new THREE.TorusGeometry(rtor, rmax, 16, 100, deltaphi);
+        this.geometries[name] = torus;
+
+      }
+
 
       if ( type === ' polycone' ) {
         //console.log('polycone');

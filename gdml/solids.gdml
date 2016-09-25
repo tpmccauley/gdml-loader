@@ -126,7 +126,7 @@
      <quadrangular vertex1="v4" vertex2="v3" vertex3="v1" vertex4="v0" />
   </tessellated>
 
-  <torus name="testtorus" rmin="0.0" rmax="10.0" rtor="80.0" startphi="0.0" deltaphi="TWOPI"/>
+  <torus name="testtorus" rmin="0.0" rmax="10.0" rtor="80.0" startphi="0.0" deltaphi="6.28"/>
 
   <orb name="testorb" r="50.0"/>
   <polyhedra aunit="degree" deltaphi="90." lunit="mm" name="testph" numsides="3" startphi="0." >

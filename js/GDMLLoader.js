@@ -300,6 +300,81 @@
 
       }
 
+      if ( type === 'tet' ) {
+
+        name = solid.getAttribute('name');
+
+        var v1 = solid.getAttribute('vertex1');
+        var v2 = solid.getAttribute('vertex2');
+        var v3 = solid.getAttribute('vertex3');
+        var v4 = solid.getAttribute('vertex4');
+
+        if ( this.defines[v1] && this.defines[v2] && this.defines[v3] && this.defines[v4] ) {
+
+          v1 = this.defines[v1];
+          v2 = this.defines[v2];
+          v3 = this.defines[v3];
+          v4 = this.defines[v4];
+
+          var tet = new THREE.Geometry();
+          tet.vertices = [v1,v2,v3,v4];
+
+          tet.faces.push(new THREE.Face3(0,1,2));
+          tet.faces.push(new THREE.Face3(0,2,3));
+          tet.faces.push(new THREE.Face3(0,3,1));
+          tet.faces.push(new THREE.Face3(1,2,3));
+
+          this.geometries[name] = tet;
+
+        }
+
+      }
+
+      if ( type === 'trd' ) {
+
+        name = solid.getAttribute('name');
+
+        // Note: these are half-lengths
+        var x1 = solid.getAttribute('x1');
+        var x2 = solid.getAttribute('x2');
+        var y1 = solid.getAttribute('y1');
+        var y2 = solid.getAttribute('y2');
+        var z = solid.getAttribute('z');
+
+        var trd = new THREE.Geometry();
+
+        trd.vertices.push(new THREE.Vector3( x2, y2, z));
+        trd.vertices.push(new THREE.Vector3(-x2, y2, z));
+        trd.vertices.push(new THREE.Vector3(-x2,-y2, z));
+        trd.vertices.push(new THREE.Vector3( x2,-y2, z));
+
+        trd.vertices.push(new THREE.Vector3( x1, y1,-z));
+        trd.vertices.push(new THREE.Vector3(-x1, y1,-z));
+        trd.vertices.push(new THREE.Vector3(-x1,-y1,-z));
+        trd.vertices.push(new THREE.Vector3( x1,-y1,-z));
+
+        trd.faces.push(new THREE.Face3(0,1,2));
+        trd.faces.push(new THREE.Face3(2,3,0));
+
+        trd.faces.push(new THREE.Face3(4,5,6));
+        trd.faces.push(new THREE.Face3(6,7,4));
+
+        trd.faces.push(new THREE.Face3(0,3,7));
+        trd.faces.push(new THREE.Face3(7,4,0));
+
+        trd.faces.push(new THREE.Face3(1,2,6));
+        trd.faces.push(new THREE.Face3(6,5,1));
+
+        trd.faces.push(new THREE.Face3(1,0,4));
+        trd.faces.push(new THREE.Face3(4,5,1));
+
+        trd.faces.push(new THREE.Face3(2,3,7));
+        trd.faces.push(new THREE.Face3(7,6,2));
+
+        this.geometries[name] = trd;
+
+      }
+
 
       if ( type === ' polycone' ) {
         //console.log('polycone');
@@ -356,7 +431,12 @@
       var rotation = new THREE.Vector3(0,0,0);
 
       var geometry;
-      var material = new THREE.MeshBasicMaterial({color:Math.random()*0xffffff, transparent:true, opacity:0.5});
+      var material = new THREE.MeshBasicMaterial({
+        color:Math.random()*0xffffff,
+        transparent:true,
+        opacity:0.5,
+        wireframe:false,
+      });
 
       for ( var j = 0; j < children.length; j++ ) {
 

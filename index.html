@@ -44,18 +44,28 @@
 			controls.rotateSpeed = 3.0;
       controls.zoomSpeed = 0.5;
 
+			var lights = [];
+			lights[0] = new THREE.PointLight(0xffffff, 1, 0);
+			lights[1] = new THREE.PointLight(0xffffff, 1, 0);
+			lights[2] = new THREE.PointLight(0xffffff, 1, 0);
+
+			lights[0].position.set(0, 200, 0);
+			lights[1].position.set(100, 200, 100);
+			lights[2].position.set(-100, -200, -100);
+
+			scene.add( lights[ 0 ] );
+			scene.add( lights[ 1 ] );
+			scene.add( lights[ 2 ] );
+
 			var ambientLight = new THREE.AmbientLight(0x404040);
 			scene.add(ambientLight);
-
-			var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-      directionalLight.position.set(0, 0.5, 1);
-      scene.add(directionalLight);
 
 			var axes = new THREE.AxisHelper(0.6);
 			scene.add(axes);
 
 			var gdmlLoader = new THREE.GDMLLoader();
 			gdmlLoader.load('./gdml/Par02FullDetector.gdml', function(objects){
+			//gdmlLoader.load('./gdml/solids.gdml', function(objects){
 				scene.add(objects);
 			});
 

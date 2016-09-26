@@ -19,6 +19,7 @@
   meshes: [],
 
   load: function ( url, onLoad, onProgress, onError ) {
+
     var scope = this;
 
     var loader = new THREE.XHRLoader();
@@ -28,9 +29,11 @@
       onLoad( scope.parse( text ) );
 
     }, onProgress, onError );
+
   },
 
   parse: function ( text ) {
+
     GDML = new DOMParser().parseFromString( text, 'text/xml' );
 
     this.parseDefines();
@@ -39,6 +42,7 @@
     this.parsePhysVols();
 
     return this.group;
+
   },
 
   parseDefines: function() {
@@ -114,7 +118,9 @@
         name = def.getAttribute('name');
 
       }
+
     }
+
   },
 
 
@@ -132,6 +138,7 @@
       if ( type === 'box' ) {
 
         name = solid.getAttribute('name');
+        console.log(type, name);
 
         var x = solid.getAttribute('x');
         var y = solid.getAttribute('y');
@@ -149,7 +156,8 @@
           z = this.defines[z];
         }
 
-        var geometry = new THREE.BoxGeometry(x,y,z);
+        // x,y,z in GDML are half-widths
+        var geometry = new THREE.BoxGeometry(2*x, 2*y, 2*z);
         this.geometries[name] = geometry;
 
       }
@@ -161,6 +169,8 @@
         var lunit = solid.getAttribute('lunit');
 
         name = solid.getAttribute('name');
+        console.log(type, name);
+
         var rmin = solid.getAttribute('rmin') / 1e4;
         var rmax = solid.getAttribute('rmax') / 1e4;
         var z = solid.getAttribute('z') / 1e4;
@@ -177,9 +187,13 @@
         // x,y, radius, startAngle, endAngle, clockwise, rotation
         shape.absarc(0, 0, rmax, startphi, deltaphi, false);
 
-        var hole = new THREE.Path();
-        hole.absarc(0, 0, rmin, startphi, deltaphi, true);
-        shape.holes.push(hole);
+        if ( rmin > 0.0 ) {
+
+          var hole = new THREE.Path();
+          hole.absarc(0, 0, rmin, startphi, deltaphi, true);
+          shape.holes.push(hole);
+
+        }
 
         var extrudeSettings = {
           amount : z,
@@ -197,6 +211,9 @@
       if ( type === 'sphere' ) {
 
         name = solid.getAttribute('name');
+        console.log(type, name);
+
+        var rmin = solid.getAttribute('rmin');
         var rmax = solid.getAttribute('rmax');
 
         var startphi = solid.getAttribute('startphi');
@@ -206,6 +223,10 @@
         var deltatheta = solid.getAttribute('deltatheta');
 
         var aunit = solid.getAttribute('aunit');
+
+        if ( ! rmin ) {
+          rmin = 0.0;
+        }
 
         if ( ! startphi ) {
           startphi = 0.0;
@@ -227,7 +248,6 @@
 
         // radius, widthSegments, heightSegments, phiStart, phiLength, thetaStart, thetaLength
         var sphere = new THREE.SphereGeometry(rmax, 32, 32, startphi, deltaphi, starttheta, deltatheta);
-
         this.geometries[name] = sphere;
 
       }
@@ -235,6 +255,8 @@
       if ( type === 'orb' ) {
 
         name = solid.getAttribute('name');
+        console.log(type, name);
+
         var r = solid.getAttribute('r');
 
         var sphere = new THREE.SphereGeometry(r, 32, 32, 0.0, 2*Math.PI, 0.0, Math.PI);
@@ -245,6 +267,7 @@
       if ( type === 'cone' ) {
 
         name = solid.getAttribute('name');
+        console.log(type, name);
 
         var rmin1 = solid.getAttribute('rmin1');
         var rmax1 = solid.getAttribute('rmax1');
@@ -268,14 +291,15 @@
 
         // Note: ConeGeometry in THREE assumes inner radii of 0 and rmax1 = 0
         // radius, height, radialSegments, heightSegments, openEnded, thetaStart, thetaLength
-        //var cone = new THREE.ConeGeometry();
-        //this.geometries[name] = cone;
+        var cone = new THREE.ConeGeometry(rmax2, z, 32, 1, false, startphi, deltaphi);
+        this.geometries[name] = cone;
 
       }
 
       if ( type === 'torus' ) {
 
         name = solid.getAttribute('name');
+        console.log(type, name);
 
         var rmin = solid.getAttribute('rmin');
         var rmax = solid.getAttribute('rmax');
@@ -295,7 +319,7 @@
         // Note: There is no inner radius for a THREE.TorusGeometry
         // and start phi is always 0.0
         // radius, tube, radialSegments, tubularSegments, arc
-        var torus = new THREE.TorusGeometry(rtor, rmax, 16, 100, deltaphi);
+        var torus = new THREE.TorusGeometry(1.0*rtor, rmax, 16, 100, deltaphi);
         this.geometries[name] = torus;
 
       }
@@ -303,6 +327,7 @@
       if ( type === 'tet' ) {
 
         name = solid.getAttribute('name');
+        console.log(type, name);
 
         var v1 = solid.getAttribute('vertex1');
         var v2 = solid.getAttribute('vertex2');
@@ -319,10 +344,10 @@
           var tet = new THREE.Geometry();
           tet.vertices = [v1,v2,v3,v4];
 
-          tet.faces.push(new THREE.Face3(0,1,2));
-          tet.faces.push(new THREE.Face3(0,2,3));
           tet.faces.push(new THREE.Face3(0,3,1));
-          tet.faces.push(new THREE.Face3(1,2,3));
+          tet.faces.push(new THREE.Face3(2,3,0));
+          tet.faces.push(new THREE.Face3(1,2,0));
+          tet.faces.push(new THREE.Face3(3,2,1));
 
           this.geometries[name] = tet;
 
@@ -333,6 +358,7 @@
       if ( type === 'trd' ) {
 
         name = solid.getAttribute('name');
+        console.log(type, name);
 
         var x1 = solid.getAttribute('x1');
         var x2 = solid.getAttribute('x2');
@@ -377,6 +403,7 @@
       if ( type === 'eltube' ) {
 
         name = solid.getAttribute('name');
+        console.log(type, name);
 
         var dx = solid.getAttribute('dx');
         var dy = solid.getAttribute('dy');
@@ -402,6 +429,7 @@
       if ( type === 'arb8' ) {
 
         name = solid.getAttribute('name');
+        console.log(type, name);
 
         var dz = solid.getAttribute('dz');
 
@@ -489,6 +517,7 @@
   },
 
   parsePhysVols: function() {
+
     var physvols = GDML.querySelectorAll('physvol');
 
     for ( var i = 0; i < physvols.length; i++ ) {
@@ -506,11 +535,12 @@
       var rotation = new THREE.Vector3(0,0,0);
 
       var geometry;
-      var material = new THREE.MeshBasicMaterial({
+
+      var material = new THREE.MeshPhongMaterial({
         color:Math.random()*0xffffff,
         transparent:true,
         opacity:0.5,
-        wireframe:false,
+        wireframe:false
       });
 
       for ( var j = 0; j < children.length; j++ ) {

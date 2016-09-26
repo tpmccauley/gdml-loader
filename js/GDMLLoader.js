@@ -375,6 +375,30 @@
 
       }
 
+      if ( type === 'eltube' ) {
+
+        name = solid.getAttribute('name');
+
+        var dx = solid.getAttribute('dx');
+        var dy = solid.getAttribute('dy');
+        var dz = solid.getAttribute('dz');
+
+        var shape = new THREE.Shape();
+        // x, y, xRadius, yRadius, startAngle, endAngle, clockwise, rotation
+        shape.absellipse(0, 0, dx, dy, 0.0, 2*Math.PI, false, 0);
+
+        var extrudeSettings = {
+          amount : 2*dz,
+          steps : 1,
+          bevelEnabled: false,
+          curveSegments: 24
+        };
+
+        var geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        geometry.center();
+        this.geometries[name] = geometry;
+
+      }
 
       if ( type === ' polycone' ) {
         //console.log('polycone');

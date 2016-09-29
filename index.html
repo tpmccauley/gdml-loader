@@ -64,9 +64,17 @@
 			scene.add(axes);
 
 			var gdmlLoader = new THREE.GDMLLoader();
-			gdmlLoader.load('./gdml/Par02FullDetector.gdml', function(objects){
+			gdmlLoader.load('./gdml/Par02FullDetector.gdml', function(objects) {
 			//gdmlLoader.load('./gdml/solids.gdml', function(objects){
 				scene.add(objects);
+
+				var world = objects.getObjectByName('world');
+				var vertex = world.geometry.vertices[0];
+
+				camera.position.x = Math.abs(0.5*vertex.x);
+				camera.position.y = Math.abs(0.5*vertex.y);
+				camera.position.z = Math.abs(0.5*vertex.z); 
+
 			});
 
 			var render = function () {

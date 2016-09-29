@@ -40,8 +40,45 @@
     this.parseSolids();
     this.parseVolumes();
     this.parsePhysVols();
+    this.parseSetup();
 
     return this.group;
+
+  },
+
+  parseSetup: function() {
+
+    var setup = GDML.querySelectorAll('setup');
+    var worlds = setup[0].childNodes;
+
+    for ( var i = 0; i < worlds.length; i++ ) {
+
+      var nodeName = worlds[i].nodeName;
+      var node = worlds[i];
+
+      if ( nodeName === 'world' ) {
+
+        var volumeref = node.getAttribute('ref');
+        var solidref = this.refs[volumeref];
+
+        var geometry = this.geometries[solidref];
+        var material = new THREE.MeshBasicMaterial({
+          color:0xcccccc,
+          wireframe:false,
+          transparent:true,
+          opacity:0.5
+        });
+
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.name = nodeName;
+        mesh.visible = true;
+
+        mesh.position.set(0.0, 0.0, 0.0);
+        this.group.add(mesh);
+
+      }
+
+    }
 
   },
 
@@ -140,9 +177,9 @@
         name = solid.getAttribute('name');
         console.log(type, name);
 
-        var x = solid.getAttribute('x');
-        var y = solid.getAttribute('y');
-        var z = solid.getAttribute('z');
+        var x = solid.getAttribute('x') / 1e4;
+        var y = solid.getAttribute('y') / 1e4;
+        var z = solid.getAttribute('z') / 1e4;
 
         if ( this.defines[x] ) {
           x = this.defines[x];
@@ -169,7 +206,7 @@
         var lunit = solid.getAttribute('lunit');
 
         name = solid.getAttribute('name');
-        console.log(type, name);
+        //console.log(type, name);
 
         var rmin = solid.getAttribute('rmin') / 1e4;
         var rmax = solid.getAttribute('rmax') / 1e4;
@@ -211,7 +248,7 @@
       if ( type === 'sphere' ) {
 
         name = solid.getAttribute('name');
-        console.log(type, name);
+        //console.log(type, name);
 
         var rmin = solid.getAttribute('rmin');
         var rmax = solid.getAttribute('rmax');
@@ -255,7 +292,7 @@
       if ( type === 'orb' ) {
 
         name = solid.getAttribute('name');
-        console.log(type, name);
+        //console.log(type, name);
 
         var r = solid.getAttribute('r');
 
@@ -267,7 +304,7 @@
       if ( type === 'cone' ) {
 
         name = solid.getAttribute('name');
-        console.log(type, name);
+        //console.log(type, name);
 
         var rmin1 = solid.getAttribute('rmin1');
         var rmax1 = solid.getAttribute('rmax1');
@@ -299,7 +336,7 @@
       if ( type === 'torus' ) {
 
         name = solid.getAttribute('name');
-        console.log(type, name);
+        //console.log(type, name);
 
         var rmin = solid.getAttribute('rmin');
         var rmax = solid.getAttribute('rmax');
@@ -327,7 +364,7 @@
       if ( type === 'tet' ) {
 
         name = solid.getAttribute('name');
-        console.log(type, name);
+        //console.log(type, name);
 
         var v1 = solid.getAttribute('vertex1');
         var v2 = solid.getAttribute('vertex2');
@@ -358,7 +395,7 @@
       if ( type === 'trd' ) {
 
         name = solid.getAttribute('name');
-        console.log(type, name);
+        //console.log(type, name);
 
         var x1 = solid.getAttribute('x1');
         var x2 = solid.getAttribute('x2');
@@ -403,7 +440,7 @@
       if ( type === 'eltube' ) {
 
         name = solid.getAttribute('name');
-        console.log(type, name);
+        //console.log(type, name);
 
         var dx = solid.getAttribute('dx');
         var dy = solid.getAttribute('dy');
@@ -429,7 +466,7 @@
       if ( type === 'arb8' ) {
 
         name = solid.getAttribute('name');
-        console.log(type, name);
+        //console.log(type, name);
 
         var dz = solid.getAttribute('dz');
 
